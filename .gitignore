@@ -1,0 +1,41 @@
+# Ignorowanie katalogów i plików utworzonych przez systemy operacyjne
+.DS_Store
+Thumbs.db
+
+# Ignorowanie katalogów i plików utworzonych przez IDEs
+.idea/
+.vscode/
+
+# Ignorowanie katalogu node_modules
+node_modules/
+
+# Ignorowanie plików wygenerowanych przez Webpack lub inne narzędzia budujące
+/build/
+/dist/
+/out/
+
+# Ignorowanie plików konfiguracyjnych
+.env
+
+# Ignorowanie plików z danymi do debugowania
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignorowanie plików tymczasowych
+*.log
+*.tmp
+
+# Ignorowanie plików z danymi prywatnymi
+*.key
+*.pem
+
+# Ignorowanie plików z danymi użytkownika
+*.sqlite
+
+# Ignorowanie plików z danymi autoryzacji
+*.p12
+
+# Ignorowanie plików z danymi generowanymi przez narzędzia typograficzne
+*.woff
+*.woff2
