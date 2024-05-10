@@ -2,12 +2,13 @@
   "name": "roadeye",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
+    "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Przemekhasz",
   "license": "ISC",
   "dependencies": {
     "electron": "^30.0.3"
