@@ -5,17 +5,33 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "electron-builder"
   },
   "keywords": [],
   "author": "Przemekhasz",
   "license": "ISC",
-  "dependencies": {
-    "electron": "^30.0.3"
+  "build": {
+    "appId": "com.roadeye.app",
+    "productName": "RoadEye",
+    "directories": {
+      "output": "dist"
+    },
+    "mac": {
+      "icon": "assets/img/roadEyeiLogo-removebgx512.png"
+    },
+    "win": {
+      "icon": "assets/img/roadEyeiLogo-removebgx512.png"
+    },
+    "linux": {
+      "icon": "assets/img/roadEyeiLogo-removebgx512.png"
+    }
   },
   "devDependencies": {
+    "electron": "^30.0.3",
     "@types/electron": "^1.6.10",
     "@types/node": "^20.12.11",
+    "electron-builder": "^24.13.3",
     "typescript": "^5.4.5"
   }
 }
