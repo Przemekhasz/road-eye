@@ -3,12 +3,14 @@ import { Route, Routes} from 'react-router-dom';
 import LoginScreen from "./components/LoginScreen";
 import Dashboard from "./components/Dashboard";
 import './App.css'
+import VideoExplorer from "./components/VideoExplorer";
 
 const App: React.FC = () => {
   return (
       <Routes>
           <Route path='/' element={<LoginScreen />} />
-          <Route path='/dashboard' element={<Dashboard userName={'Przemek Szoszon'} lastRecordDate={'5.05.2024'} numberOfRecords={120} diskSpaceUsage={350} />} />
+          <Route path='/dashboard' element={<Dashboard />} />
+          <Route path={'video-eksploer'} element={<VideoExplorer />} />
       </Routes>
   );
 };

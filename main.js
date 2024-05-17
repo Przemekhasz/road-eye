@@ -10,10 +10,7 @@ function createWindow() {
             nodeIntegration: true,
         },
     });
-    mainWindow.loadURL('http://localhost:3001');
-    mainWindow.on('closed', function () {
-        mainWindow = null;
-    });
+    mainWindow.loadURL('http://localhost:3000');
 }
 electron_1.app.on('ready', createWindow);
 electron_1.app.on('window-all-closed', function () {

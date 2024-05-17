@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Button, TextField, Typography } from '@mui/material';
-import BluetoothDriveIcon from '@mui/icons-material/BluetoothDrive';
+import RoadEyeLogoRB from '../assets/img/roadEyeiLogo-removebg.png'
+
 
 const LoginScreen: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -16,8 +17,9 @@ const LoginScreen: React.FC = () => {
     };
 
     return (
-        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight="100vh" bgcolor="#333" color="#fff">
-            <BluetoothDriveIcon fontSize="large" style={{ color: '#ff5252' }} />
+        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight="100vh" bgcolor="#011226" color="#fff">
+            {/*<BluetoothDriveIcon fontSize="large" style={{ color: '#ff5252' }} />*/}
+            <img src={RoadEyeLogoRB} alt={'royal eye logo'} />
             <Typography variant="h5" gutterBottom style={{ marginBottom: '20px', color: '#ff5252' }}>Zaloguj się do RoadEye</Typography>
             <Box width="300px">
                 <TextField

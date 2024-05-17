@@ -6,6 +6,7 @@ import {
     Dashboard as DashboardIcon,
     Settings, Share, Notifications, History, Equalizer, Comment, Group, SettingsApplications
 } from '@mui/icons-material';
+import {Link} from "react-router-dom";
 
 const Dashboard: React.FC = () => {
     return (
@@ -41,10 +42,12 @@ const Dashboard: React.FC = () => {
                         <ListItemText primary="Dashboard" />
                     </ListItem>
                     <Divider />
-                    <ListItem button>
-                        <ListItemIcon><ListAltIcon /></ListItemIcon>
-                        <ListItemText primary="Eksplorator nagran" />
-                    </ListItem>
+                    <Link to={'/video-eksploer'}>
+                        <ListItem button>
+                            <ListItemIcon><ListAltIcon /></ListItemIcon>
+                            <ListItemText primary="Eksplorator nagran" />
+                        </ListItem>
+                    </Link>
                     <Divider />
                     <ListItem button>
                         <ListItemIcon><Settings /></ListItemIcon>
