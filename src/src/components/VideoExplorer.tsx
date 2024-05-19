@@ -11,8 +11,9 @@ import ScissorsIcon from '@mui/icons-material/ContentCut';
 import { Link } from 'react-router-dom';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile } from '@ffmpeg/util';
-import {FileData} from "@ffmpeg/ffmpeg/dist/esm/types";
-import CommentsSection from "./CommentsSection";
+import { FileData } from '@ffmpeg/ffmpeg/dist/esm/types';
+import CommentsSection from './CommentsSection';
+import { DrawerBox } from './DrawerBox';
 
 interface Video {
     title: string;
@@ -80,7 +81,6 @@ class VideoExplorer extends Component<{}, VideoExplorerState> {
         this.toggleTrimmingMode = this.toggleTrimmingMode.bind(this);
     }
 
-
     private handleFileUpload(event: React.ChangeEvent<HTMLInputElement>): void {
         const files: FileList | null = event.target.files;
         if (files) {
@@ -112,7 +112,7 @@ class VideoExplorer extends Component<{}, VideoExplorerState> {
         });
     }
 
-    private  handleStop(): void {
+    private handleStop(): void {
         this.setState({ currentVideo: null, playing: false, trimming: false }, () => {
             if (this.videoRef.current) {
                 this.videoRef.current.pause();
@@ -219,216 +219,226 @@ class VideoExplorer extends Component<{}, VideoExplorerState> {
         const { videos, currentVideo, playing, currentTime, duration, newComment, startTime, endTime, processing, trimming, dialogOpen, fileName } = this.state;
 
         return (
-            <Box display="flex" bgcolor="#222" color="#fff" p={2} height="100vh">
-                <Box width="300px" bgcolor="#333" p={2} borderRadius="8px" mr={2}>
-                    <input
-                        accept="video/*"
-                        style={{ display: 'none' }}
-                        id="upload-button"
-                        multiple
-                        type="file"
-                        onChange={this.handleFileUpload}
-                    />
-                    <Link to="/dashboard">
-                        <Button
-                            variant="contained"
-                            component="span"
-                            style={{
-                                backgroundColor: '#ff5252',
-                                color: '#fff',
-                                marginBottom: '16px',
-                                marginRight: '10px',
-                            }}
-                        >
-                            <ArrowBackIcon />
-                        </Button>
-                    </Link>
-                    <label htmlFor="upload-button">
-                        <Button
-                            variant="contained"
-                            component="span"
-                            style={{
-                                backgroundColor: '#ff5252',
-                                color: '#fff',
-                                marginBottom: '16px',
-                            }}
-                        >
-                            Upload Videos
-                        </Button>
-                    </label>
-                    <List>
-                        {videos.map((video, index) => (
-                            <ListItem
-                                key={index}
-                                button
-                                onClick={() => this.handlePlay(video)}
+            <>
+                <DrawerBox />
+                <Box display="flex" bgcolor="#222" color="#fff" p={2} height="110vh" ml={35}>
+                    <Box width="300px" bgcolor="#333" p={2} borderRadius="8px" mr={2}>
+                        <input
+                            accept="video/*"
+                            style={{ display: 'none' }}
+                            id="upload-button"
+                            multiple
+                            type="file"
+                            onChange={this.handleFileUpload}
+                        />
+                        <Link to="/">
+                            <Button
+                                variant="contained"
+                                component="span"
                                 style={{
-                                    backgroundColor: currentVideo?.url === video.url ? '#ff5252' : 'transparent',
-                                    color: currentVideo?.url === video.url ? '#fff' : '#ccc',
-                                    borderRadius: '4px',
-                                    marginBottom: '8px',
+                                    backgroundColor: '#ff5252',
+                                    color: '#fff',
+                                    marginBottom: '16px',
+                                    marginRight: '10px',
                                 }}
                             >
-                                <ListItemIcon style={{ color: currentVideo?.url === video.url ? '#fff' : '#ff5252' }}>
-                                    <PlayArrowIcon />
-                                </ListItemIcon>
-                                <ListItemText primary={video.title} />
-                            </ListItem>
-                        ))}
-                    </List>
-                </Box>
-                <Box flexGrow={1} display="flex" flexDirection="column" alignItems="center" justifyContent="center">
-                    {currentVideo && (
-                        <>
-                            <Box position="relative" width="99%" maxHeight="80vh" mb={2}>
-                                <video
-                                    ref={this.videoRef}
-                                    src={currentVideo.url}
-                                    controls={false}
-                                    style={{
-                                        width: '100%',
-                                        height: '100%',
-                                        borderRadius: '8px',
-                                        backgroundColor: '#000',
-                                    }}
-                                    onTimeUpdate={this.handleTimeUpdate}
-                                />
-                                <Box position="absolute" bottom="0" width="100%" p={1} bgcolor="rgba(0, 0, 0, 0.5)">
-                                    {trimming ? (
-                                        <Slider
-                                            value={[startTime, endTime]}
-                                            max={duration}
-                                            onChange={(event, newValue) => {
-                                                const [newStartTime, newEndTime] = newValue as number[];
-                                                this.setState({ startTime: newStartTime, endTime: newEndTime }, () => {
-                                                    if (this.videoRef.current) {
-                                                        this.videoRef.current.currentTime = newEndTime;
-                                                    }
-                                                });
-                                            }}
-                                            valueLabelDisplay="auto"
-                                            style={{ color: '#ff5252', width: '100%' }}
-                                        />
-                                    ) : (
-                                        <Slider
-                                            value={currentTime}
-                                            max={duration}
-                                            onChange={this.handleSliderChange}
-                                            style={{ color: '#ff5252' }}
-                                        />
-                                    )}
-                                    <Box display="flex" justifyContent="space-between">
-                                        <IconButton onClick={playing ? this.handlePause : () => this.handlePlay(currentVideo)} style={{ color: '#ff5252' }}>
-                                            {playing ? <PauseIcon /> : <PlayArrowIcon />}
-                                        </IconButton>
-                                        <IconButton onClick={this.handleStop} style={{ color: '#ff5252' }}>
-                                            <StopIcon />
-                                        </IconButton>
-                                        <IconButton onClick={this.toggleTrimmingMode} style={{ color: '#ff5252' }}>
-                                            <ScissorsIcon />
-                                        </IconButton>
-                                    </Box>
-                                </Box>
-                            </Box>
-                            {trimming && (
-                                <Box width="99%" bgcolor="#333" p={2} borderRadius="8px" marginLeft={5} marginRight={5} mb={2}>
-                                    <Typography variant="h6" gutterBottom>
-                                        Trim Video
-                                    </Typography>
-                                    <Box display="flex" mb={2}>
-                                        <TextField
-                                            label="Start Time (seconds)"
-                                            type="number"
-                                            value={startTime}
-                                            onChange={this.handleStartTimeChange}
-                                            InputLabelProps={{
-                                                style: { color: '#fff' },
-                                            }}
-                                            InputProps={{
-                                                style: { color: '#fff' },
-                                            }}
-                                            style={{ marginRight: '16px' }}
-                                        />
-                                        <TextField
-                                            label="End Time (seconds)"
-                                            type="number"
-                                            value={endTime}
-                                            onChange={this.handleEndTimeChange}
-                                            InputLabelProps={{
-                                                style: { color: '#fff' },
-                                            }}
-                                            InputProps={{
-                                                style: { color: '#fff' },
-                                            }}
-                                        />
-                                    </Box>
-                                    <Button
-                                        variant="contained"
-                                        style={{ backgroundColor: '#ff5252', color: '#fff' }}
-                                        onClick={this.handleTrimVideo}
-                                        disabled={processing}
+                                <ArrowBackIcon />
+                            </Button>
+                        </Link>
+                        <label htmlFor="upload-button">
+                            <Button
+                                variant="contained"
+                                component="span"
+                                style={{
+                                    backgroundColor: '#ff5252',
+                                    color: '#fff',
+                                    marginBottom: '16px',
+                                }}
+                            >
+                                Upload Videos
+                            </Button>
+                        </label>
+                        <Box
+                            sx={{
+                                maxHeight: 'calc(100vh - 200px)',
+                                overflowY: videos.length > 18 ? 'scroll' : 'auto',
+                            }}
+                        >
+                            <List>
+                                {videos.map((video, index) => (
+                                    <ListItem
+                                        key={index}
+                                        button
+                                        onClick={() => this.handlePlay(video)}
+                                        style={{
+                                            backgroundColor: currentVideo?.url === video.url ? '#ff5252' : 'transparent',
+                                            color: currentVideo?.url === video.url ? '#fff' : '#ccc',
+                                            borderRadius: '4px',
+                                            marginBottom: '8px',
+                                        }}
                                     >
-                                        {processing ? 'Processing...' : 'Trim and Download'}
-                                    </Button>
+                                        <ListItemIcon style={{ color: currentVideo?.url === video.url ? '#fff' : '#ff5252' }}>
+                                            <PlayArrowIcon />
+                                        </ListItemIcon>
+                                        <ListItemText primary={video.title} />
+                                    </ListItem>
+                                ))}
+                            </List>
+                        </Box>
+                    </Box>
+                    <Box flexGrow={1} display="flex" flexDirection="column" alignItems="center" justifyContent="center">
+                        {currentVideo && (
+                            <>
+                                <Box position="relative" width="99%" maxHeight="80vh" mb={2}>
+                                    <video
+                                        ref={this.videoRef}
+                                        src={currentVideo.url}
+                                        controls={false}
+                                        style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            borderRadius: '8px',
+                                            backgroundColor: '#000',
+                                        }}
+                                        onTimeUpdate={this.handleTimeUpdate}
+                                    />
+                                    <Box position="absolute" bottom="0" width="100%" p={1} bgcolor="rgba(0, 0, 0, 0.5)">
+                                        {trimming ? (
+                                            <Slider
+                                                value={[startTime, endTime]}
+                                                max={duration}
+                                                onChange={(event, newValue) => {
+                                                    const [newStartTime, newEndTime] = newValue as number[];
+                                                    this.setState({ startTime: newStartTime, endTime: newEndTime }, () => {
+                                                        if (this.videoRef.current) {
+                                                            this.videoRef.current.currentTime = newEndTime;
+                                                        }
+                                                    });
+                                                }}
+                                                valueLabelDisplay="auto"
+                                                style={{ color: '#ff5252', width: '100%' }}
+                                            />
+                                        ) : (
+                                            <Slider
+                                                value={currentTime}
+                                                max={duration}
+                                                onChange={this.handleSliderChange}
+                                                style={{ color: '#ff5252' }}
+                                            />
+                                        )}
+                                        <Box display="flex" justifyContent="space-between">
+                                            <IconButton onClick={playing ? this.handlePause : () => this.handlePlay(currentVideo)} style={{ color: '#ff5252' }}>
+                                                {playing ? <PauseIcon /> : <PlayArrowIcon />}
+                                            </IconButton>
+                                            <IconButton onClick={this.handleStop} style={{ color: '#ff5252' }}>
+                                                <StopIcon />
+                                            </IconButton>
+                                            <IconButton onClick={this.toggleTrimmingMode} style={{ color: '#ff5252' }}>
+                                                <ScissorsIcon />
+                                            </IconButton>
+                                        </Box>
+                                    </Box>
                                 </Box>
-                            )}
-                            <Box width="99%" bgcolor="#333" p={2} borderRadius="8px" mb={2} marginLeft={5} marginRight={5}>
-                                <Typography variant="subtitle1" gutterBottom>
-                                    Author: {currentVideo.author}
-                                </Typography>
-                                <Typography variant="subtitle1" gutterBottom>
-                                    Date: {currentVideo.date}
-                                </Typography>
-                                <Box display="flex" alignItems="center">
+                                {trimming && (
+                                    <Box width="99%" bgcolor="#333" p={2} borderRadius="8px" marginLeft={5} marginRight={5} mb={2}>
+                                        <Typography variant="h6" gutterBottom>
+                                            Trim Video
+                                        </Typography>
+                                        <Box display="flex" mb={2}>
+                                            <TextField
+                                                label="Start Time (seconds)"
+                                                type="number"
+                                                value={startTime}
+                                                onChange={this.handleStartTimeChange}
+                                                InputLabelProps={{
+                                                    style: { color: '#fff' },
+                                                }}
+                                                InputProps={{
+                                                    style: { color: '#fff' },
+                                                }}
+                                                style={{ marginRight: '16px' }}
+                                            />
+                                            <TextField
+                                                label="End Time (seconds)"
+                                                type="number"
+                                                value={endTime}
+                                                onChange={this.handleEndTimeChange}
+                                                InputLabelProps={{
+                                                    style: { color: '#fff' },
+                                                }}
+                                                InputProps={{
+                                                    style: { color: '#fff' },
+                                                }}
+                                            />
+                                        </Box>
+                                        <Button
+                                            variant="contained"
+                                            style={{ backgroundColor: '#ff5252', color: '#fff' }}
+                                            onClick={this.handleTrimVideo}
+                                            disabled={processing}
+                                        >
+                                            {processing ? 'Processing...' : 'Trim and Download'}
+                                        </Button>
+                                    </Box>
+                                )}
+                                <Box width="99%" bgcolor="#333" p={2} borderRadius="8px" mb={2} marginLeft={5} marginRight={5}>
                                     <Typography variant="subtitle1" gutterBottom>
-                                        Likes: {currentVideo.likes}
+                                        Author: {currentVideo.author}
                                     </Typography>
-                                    <IconButton onClick={this.handleLike} style={{ color: '#ff5252' }}>
-                                        <ThumbUpIcon />
-                                    </IconButton>
+                                    <Typography variant="subtitle1" gutterBottom>
+                                        Date: {currentVideo.date}
+                                    </Typography>
+                                    <Box display="flex" alignItems="center">
+                                        <Typography variant="subtitle1" gutterBottom>
+                                            Likes: {currentVideo.likes}
+                                        </Typography>
+                                        <IconButton onClick={this.handleLike} style={{ color: '#ff5252' }}>
+                                            <ThumbUpIcon />
+                                        </IconButton>
+                                    </Box>
                                 </Box>
-                            </Box>
-                            <CommentsSection
-                                comments={currentVideo.comments}
-                                newComment={newComment}
-                                onCommentChange={this.handleCommentChange}
-                                onAddComment={this.handleAddComment}
-                            />
-                        </>
-                    )}
-                </Box>
+                                <CommentsSection
+                                    comments={currentVideo.comments}
+                                    newComment={newComment}
+                                    onCommentChange={this.handleCommentChange}
+                                    onAddComment={this.handleAddComment}
+                                />
+                            </>
+                        )}
+                    </Box>
 
-                <Dialog open={dialogOpen} onClose={this.handleDialogClose}>
-                    <DialogTitle style={{ backgroundColor: '#333', color: '#ff5252' }}>Save Trimmed Video</DialogTitle>
-                    <DialogContent style={{ backgroundColor: '#333' }}>
-                        <DialogContentText style={{ color: '#fff' }}>
-                            Please enter a name for the trimmed video file.
-                        </DialogContentText>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            label="File Name"
-                            fullWidth
-                            value={fileName}
-                            onChange={(event) => this.setState({ fileName: event.target.value })}
-                            InputLabelProps={{
-                                style: { color: '#fff' },
-                            }}
-                            InputProps={{
-                                style: { color: '#fff' },
-                            }}
-                        />
-                    </DialogContent>
-                    <DialogActions style={{ backgroundColor: '#333' }}>
-                        <Button onClick={this.handleDialogClose} style={{ color: '#ff5252' }}>
-                            Cancel
-                        </Button>
-                        <Button onClick={this.handleDialogSave} style={{ color: '#ff5252' }}>
-                            Save
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            </Box>
+                    <Dialog open={dialogOpen} onClose={this.handleDialogClose}>
+                        <DialogTitle style={{ backgroundColor: '#333', color: '#ff5252' }}>Save Trimmed Video</DialogTitle>
+                        <DialogContent style={{ backgroundColor: '#333' }}>
+                            <DialogContentText style={{ color: '#fff' }}>
+                                Please enter a name for the trimmed video file.
+                            </DialogContentText>
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                label="File Name"
+                                fullWidth
+                                value={fileName}
+                                onChange={(event) => this.setState({ fileName: event.target.value })}
+                                InputLabelProps={{
+                                    style: { color: '#fff' },
+                                }}
+                                InputProps={{
+                                    style: { color: '#fff' },
+                                }}
+                            />
+                        </DialogContent>
+                        <DialogActions style={{ backgroundColor: '#333' }}>
+                            <Button onClick={this.handleDialogClose} style={{ color: '#ff5252' }}>
+                                Cancel
+                            </Button>
+                            <Button onClick={this.handleDialogSave} style={{ color: '#ff5252' }}>
+                                Save
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+                </Box>
+            </>
         );
     }
 }
